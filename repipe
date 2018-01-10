@@ -64,5 +64,5 @@ if [[ -z ${TARGET} ]]; then
 fi
 
 set +x
-fly --target ${TARGET} --config .deploy.yml
+fly --target ${TARGET} set-pipeline     --pipeline ${PIPELINE} --config .deploy.yml
 fly --target ${TARGET} unpause-pipeline --pipeline ${PIPELINE}
