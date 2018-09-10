@@ -1,0 +1,38 @@
+#!/bin/bash
+set -eu
+
+
+header() {
+	echo "#########################################"
+	echo
+	echo $*
+	echo
+	echo "#########################################"
+	echo
+	echo
+}
+
+header "Re-building Website Static Assets"
+pushd $REPO_ROOT
+	make
+popd
+
+if [[ -n "$(cd ${REPO_ROOT}; git status --porcelain)" ]]; then
+	pushd ${REPO_ROOT}
+
+	if [[ -z $(git config --global user.email) ]]; then
+		git config --global user.email "ci@starkandwayne.com"
+	fi
+	if [[ -z $(git config --global user.name) ]]; then
+		git config --global user.name "CI Bot"
+	fi
+
+	git merge --no-edit ${BRANCH}
+	git add -A
+	git status
+	git commit -m "[ci] Rebuilt static assets via pipeline"
+	popd
+fi
+cp -a ${REPO_ROOT} ${REPO_OUT}
+
+echo "DONE"
